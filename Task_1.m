@@ -1,25 +1,34 @@
 function Task_1()
-[y,Fs]=ReadAudio();
-time=[1:length(y)]/Fs;
-disp(length(y));
-disp(Fs);
-disp(length(y)/Fs);
-plot(time,y);
+x=[1:15];
+h=[0 0.1 0.2 0.4 0.2 0.1 0];
+y=Convolution(x,h);
+subplot(4,1,1)
+stem(x);
+title('x[n]');
 
-sound(y,Fs)
-pause(1);
-sound(y,Fs/2)
-pause(1);
-sound(y,Fs/4)
-pause(1);
-sound(y,Fs/8)
+subplot(4,1,2)
+stem(h);
+title('h[n]');
 
+subplot(4,1,3)
+stem(y);
+title('y[n]');
+
+u=conv(x,h);
+subplot(4,1,4)
+stem(u);
+title('y[n] by conv()');
 end
 
-function [y,Fs]=ReadAudio()
-[y,Fs]=audioread('NewCat.wav');        
+function y=Convolution(x,h)
+buffer=zeros(1,length(h));
+for i=1:length(x)+length(h)-1
+    if i<=length(x)
+        buffer(1)=x(i);                         %for new index
+    else
+        buffer(1)=0;
+    end
+    y(i)=sum(buffer.*h);                    %Point-to-point multiplication and summation
+    buffer=[0 buffer(1:end-1)];             %Shifting buffer to right
 end
-
-% function CutAudio(y,Fs)
-% wavwrite(y(1:Fs),Fs,'NewCat.wav');
-% end
+end
